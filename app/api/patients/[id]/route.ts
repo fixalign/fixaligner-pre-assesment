@@ -54,6 +54,7 @@ export async function PATCH(
       updateData.assessed_at = body.assessed_at;
     }
 
+    // Update patient and return non-sensitive columns to client
     const { data, error } = await supabase
       .from("patients")
       .update(updateData)
@@ -62,6 +63,58 @@ export async function PATCH(
         `id, name, expo_token, video_url, is_eligible, estimated_steps, notes, assessed_at, created_at, updated_at`
       )
       .single();
+
+    // If an assessed_at timestamp was provided, post to the webhook
+    if (body.assessed_at) {
+      try {
+        // Fetch sensitive fields separately for webhook delivery
+        const { data: sensitiveData, error: sensitiveError } = await supabase
+          .from("patients")
+          .select(
+            "email, phone, expo_token, video_url, name, is_eligible, estimated_steps, notes, assessed_at"
+          )
+          .eq("id", id)
+          .single();
+
+        if (sensitiveError) {
+          console.error(
+            "Failed to fetch sensitive fields for webhook",
+            sensitiveError
+          );
+        } else {
+          const payload = {
+            id: id,
+            name: sensitiveData.name,
+            email: sensitiveData.email || null,
+            phone: sensitiveData.phone || null,
+            expo_token: sensitiveData.expo_token || null,
+            video_url: sensitiveData.video_url || null,
+            estimated_steps: sensitiveData.estimated_steps || null,
+            is_eligible: sensitiveData.is_eligible,
+            notes: sensitiveData.notes || null,
+            assessed_at: sensitiveData.assessed_at,
+          };
+
+          // Send to webhook via server route to use configured URL
+          const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL;
+          if (webhookUrl) {
+            const res = await fetch(webhookUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) {
+              console.error("Failed to deliver webhook", await res.text());
+            }
+          } else {
+            console.error("Webhook URL is not configured");
+          }
+        }
+      } catch (err) {
+        console.error("Webhook delivery error", err);
+      }
+    }
 
     if (error) throw error;
 

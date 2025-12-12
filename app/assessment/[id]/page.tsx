@@ -205,7 +205,7 @@ export default function AssessmentPage({
                   {/* Video Player */}
                   {patient.video_url ? (
                     <video
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain object-center"
                       controls
                       src={patient.video_url}
                       poster="https://placehold.co/600x400/black/white?text=Patient+Video+Preview"
