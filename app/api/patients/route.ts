@@ -6,7 +6,9 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from("patients")
-      .select("*")
+      .select(
+        `id, name, expo_token, video_url, is_eligible, estimated_steps, notes, assessed_at, created_at, updated_at`
+      )
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -30,13 +32,13 @@ export async function POST(request: Request) {
       .insert([
         {
           name: body.name,
-          email: body.email || null,
-          phone: body.phone || null,
           expo_token: body.expo_token || null,
           video_url: body.video_url || null,
         },
       ])
-      .select()
+      .select(
+        `id, name, expo_token, video_url, is_eligible, estimated_steps, notes, assessed_at, created_at, updated_at`
+      )
       .single();
 
     if (error) throw error;

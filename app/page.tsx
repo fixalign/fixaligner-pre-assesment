@@ -28,8 +28,6 @@ import { Label } from "@/components/ui/label";
 interface Patient {
   id: string;
   name: string;
-  email: string | null;
-  phone: string | null;
   expo_token: string | null;
   video_url: string | null;
   is_eligible: boolean;
@@ -47,8 +45,6 @@ export default function Home() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newPatient, setNewPatient] = useState({
     name: "",
-    email: "",
-    phone: "",
   });
   const [creating, setCreating] = useState(false);
 
@@ -83,14 +79,14 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newPatient),
+        body: JSON.stringify({ name: newPatient.name }),
       });
 
       if (response.ok) {
         const patient = await response.json();
         setPatients([patient, ...patients]);
         setShowAddDialog(false);
-        setNewPatient({ name: "", email: "", phone: "" });
+        setNewPatient({ name: "" });
       } else {
         alert("Failed to create patient");
       }
@@ -123,11 +119,8 @@ export default function Home() {
     });
   };
 
-  const filteredPatients = patients.filter(
-    (patient) =>
-      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.phone?.includes(searchTerm)
+  const filteredPatients = patients.filter((patient) =>
+    patient.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -201,29 +194,8 @@ export default function Home() {
                     }
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter email"
-                    value={newPatient.email}
-                    onChange={(e) =>
-                      setNewPatient({ ...newPatient, email: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="Enter phone number"
-                    value={newPatient.phone}
-                    onChange={(e) =>
-                      setNewPatient({ ...newPatient, phone: e.target.value })
-                    }
-                  />
+                  <div className="text-sm text-slate-500">
+                  Contact info is optional and can be added later in the assessment.
                 </div>
               </div>
               <div className="flex justify-end gap-3">
@@ -263,7 +235,6 @@ export default function Home() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Contact</TableHead>
                   <TableHead>Video</TableHead>
                   <TableHead>Date Added</TableHead>
                   <TableHead>Status</TableHead>
@@ -278,23 +249,7 @@ export default function Home() {
                       <TableCell className="font-medium">
                         {patient.name}
                       </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          {patient.email && (
-                            <div className="text-slate-600">
-                              {patient.email}
-                            </div>
-                          )}
-                          {patient.phone && (
-                            <div className="text-slate-500">
-                              {patient.phone}
-                            </div>
-                          )}
-                          {!patient.email && !patient.phone && (
-                            <div className="text-slate-400">No contact</div>
-                          )}
-                        </div>
-                      </TableCell>
+
                       <TableCell>
                         {patient.video_url ? (
                           <span className="text-green-600 text-sm">

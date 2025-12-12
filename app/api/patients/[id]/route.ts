@@ -12,7 +12,9 @@ export async function GET(
   try {
     const { data, error } = await supabase
       .from("patients")
-      .select("*")
+      .select(
+        `id, name, expo_token, video_url, is_eligible, estimated_steps, notes, assessed_at, created_at, updated_at`
+      )
       .eq("id", id)
       .single();
 
@@ -56,7 +58,9 @@ export async function PATCH(
       .from("patients")
       .update(updateData)
       .eq("id", id)
-      .select()
+      .select(
+        `id, name, expo_token, video_url, is_eligible, estimated_steps, notes, assessed_at, created_at, updated_at`
+      )
       .single();
 
     if (error) throw error;

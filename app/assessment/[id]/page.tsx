@@ -193,11 +193,7 @@ export default function AssessmentPage({
                       <User className="h-5 w-5 text-slate-500" />
                       {patient.name}
                     </CardTitle>
-                    <CardDescription>
-                      Patient ID: {patient.id}
-                      {patient.email && ` • ${patient.email}`}
-                      {patient.phone && ` • ${patient.phone}`}
-                    </CardDescription>
+                    <CardDescription>Patient ID: {patient.id}</CardDescription>
                   </div>
                   <div className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium border border-green-200">
                     Active Assessment
