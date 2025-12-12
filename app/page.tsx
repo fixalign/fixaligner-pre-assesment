@@ -175,7 +175,7 @@ export default function Home() {
               Manage patient assessments and aligner plans.
             </p>
           </div>
-          <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+          {/* <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
@@ -245,7 +245,7 @@ export default function Home() {
                 </Button>
               </div>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
         </div>
 
         {loading ? (
